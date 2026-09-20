@@ -129,5 +129,5 @@ export function formatHours(value: number): string {
 }
 
 export function weekCapacity(weeklyHours: number, workdays: number): number {
-  return Math.round(((weeklyHours * workdays) / 5) * 100) / 100;
+  return Number(((weeklyHours * workdays) / 5).toPrecision(15));
 }

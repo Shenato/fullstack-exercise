@@ -3,7 +3,6 @@ import {
   Alert,
   Box,
   Button,
-  Chip,
   IconButton,
   LinearProgress,
   Pagination,
@@ -154,12 +153,6 @@ export function CapacityPage() {
             Team workspace
           </Typography>
         </Box>
-        <Chip
-          label="Mock data"
-          size="small"
-          variant="outlined"
-          sx={{ borderColor: "#dccfd8", fontSize: 11 }}
-        />
       </Box>
       <Box component="main" className="capacity-page">
         <Box className="page-title-row">
@@ -241,8 +234,14 @@ export function CapacityPage() {
             setRange(sprintRange(settings));
             setCustom(false);
           }}
-          onSearch={(value) => { setSearch(value); setPage(1); }}
-          onOverOnly={(value) => { setOverOnly(value); setPage(1); }}
+          onSearch={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          onOverOnly={(value) => {
+            setOverOnly(value);
+            setPage(1);
+          }}
           onUnit={setUnit}
           onAutomatic={setAutomatic}
           onSeconds={setSeconds}
@@ -295,12 +294,16 @@ export function CapacityPage() {
                   color: metric.tone,
                 }}
               >
-                {query.isPending ? "—" : metric.value}
+                {!query.data ? "—" : metric.value}
               </Typography>
               <Typography
                 sx={{ color: "text.secondary", fontSize: 11, mt: 0.75 }}
               >
-                {query.isPending ? "Loading" : metric.detail}
+                {!query.data
+                  ? query.isError
+                    ? "Unavailable"
+                    : "Loading"
+                  : metric.detail}
               </Typography>
             </Box>
           ))}
@@ -342,27 +345,49 @@ export function CapacityPage() {
               : query.error.message}
           </Alert>
         )}
-        <CapacityGrid
-          key={`${range.from}:${range.to}:${currentPage}:${search}:${overOnly}`}
-          weeks={weeks}
-          people={visiblePeople}
-          mobile={mobile}
-          unit={unit}
-          loading={query.isPending}
-          saving={mutation.isPending}
-          onEdit={setEditingPerson}
-          onClearFilters={() => {
-            setSearch("");
-            setOverOnly(false);
-            setPage(1);
-          }}
-        />
+        {(!query.isError || query.data) && (
+          <CapacityGrid
+            key={`${range.from}:${range.to}:${currentPage}:${search}:${overOnly}`}
+            weeks={weeks}
+            people={visiblePeople}
+            mobile={mobile}
+            unit={unit}
+            loading={query.isPending}
+            saving={mutation.isPending}
+            onEdit={setEditingPerson}
+            onClearFilters={() => {
+              setSearch("");
+              setOverOnly(false);
+              setPage(1);
+            }}
+          />
+        )}
         {!query.isPending && people.length > 0 && (
-          <Box component="nav" aria-label="People pages" sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 1.5, py: 2 }}>
+          <Box
+            component="nav"
+            aria-label="People pages"
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 1.5,
+              py: 2,
+            }}
+          >
             <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
-              {firstPerson + 1}-{Math.min(firstPerson + 10, people.length)} of {people.length} people
+              {firstPerson + 1}-{Math.min(firstPerson + 10, people.length)} of{" "}
+              {people.length} people
             </Typography>
-            <Pagination count={pageCount} page={currentPage} onChange={(_event, value) => setPage(value)} size="small" siblingCount={0} boundaryCount={1} disabled={mutation.isPending} />
+            <Pagination
+              count={pageCount}
+              page={currentPage}
+              onChange={(_event, value) => setPage(value)}
+              size="small"
+              siblingCount={0}
+              boundaryCount={1}
+              disabled={mutation.isPending}
+            />
           </Box>
         )}
         <Box component="footer" className="grid-footer">

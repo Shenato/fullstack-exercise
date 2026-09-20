@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Box,
   FormControlLabel,
@@ -19,6 +20,27 @@ type Props = {
   onUnit: (value: DisplayUnit) => void;
 };
 
+const DEBOUNCE_DELAY = 200; // human perception doesn't notice delays at this delay but we still reduce unnecessary calls
+
+function useDebounce(callback: (value: string) => void) {
+  const timeout = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => () => clearTimeout(timeout.current), []);
+
+  return useCallback((value: string) => {
+    clearTimeout(timeout.current);
+    timeout.current = setTimeout(
+      () => callbackRef.current(value),
+      DEBOUNCE_DELAY,
+    );
+  }, []);
+}
+
 export function CapacityFilters({
   search,
   overOnly,
@@ -27,12 +49,22 @@ export function CapacityFilters({
   onOverOnly,
   onUnit,
 }: Props) {
+  const [searchValue, setSearchValue] = useState(search);
+  const debouncedSearch = useDebounce(onSearch);
+
+  useEffect(() => {
+    setSearchValue(search);
+  }, [search]);
+
   return (
     <Box className="filter-controls">
       <TextField
         label="Find a person"
-        value={search}
-        onChange={(event) => onSearch(event.target.value)}
+        value={searchValue}
+        onChange={(event) => {
+          setSearchValue(event.target.value);
+          debouncedSearch(event.target.value);
+        }}
         slotProps={{
           input: {
             startAdornment: (

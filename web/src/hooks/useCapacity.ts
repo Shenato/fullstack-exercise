@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { readCapacity, updatePerson } from "../mocks/capacityMock";
+import { readCapacity, updatePerson } from "../api/capacity";
 import type { CapacityData, DateRange, Person } from "../types/capacity";
 
 export function useCapacity(range: DateRange, refreshSeconds: number | false) {
@@ -16,7 +16,7 @@ export function useCapacity(range: DateRange, refreshSeconds: number | false) {
         },
     );
   const mutation = useMutation({
-    mutationFn: ({ id, weeklyHours }: Person) => updatePerson(id, weeklyHours),
+    mutationFn: (person: Person) => updatePerson(person),
     onMutate: async (person) => {
       await client.cancelQueries({ queryKey: ["capacity"] });
       const snapshots = client.getQueriesData<CapacityData>({
@@ -44,16 +44,18 @@ export function useCapacity(range: DateRange, refreshSeconds: number | false) {
         );
       }
     },
-    onSettled: () => {
-      void client.invalidateQueries({ queryKey: ["capacity"] });
-    },
+    onSettled: () => client.invalidateQueries({ queryKey: ["capacity"] }),
   });
   const query = useQuery({
     queryKey: ["capacity", range.from, range.to],
     queryFn: ({ signal }) => readCapacity(range, signal),
-    enabled: !mutation.isPending,
     staleTime: 30_000,
-    refetchInterval: refreshSeconds === false ? false : refreshSeconds * 1000,
+    refetchInterval:
+      mutation.isPending || refreshSeconds === false
+        ? false
+        : refreshSeconds * 1000,
+    refetchOnWindowFocus: !mutation.isPending,
+    refetchOnReconnect: !mutation.isPending,
     refetchIntervalInBackground: false,
     retry: 1,
   });

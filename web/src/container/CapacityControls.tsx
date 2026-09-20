@@ -53,7 +53,14 @@ export function CapacityControls(props: Props) {
       className="controls-section"
     >
       <Box className="range-toolbar">
-        <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 0.5,
+          }}
+        >
           <Tooltip title="Previous sprint">
             <span>
               <IconButton
@@ -66,10 +73,26 @@ export function CapacityControls(props: Props) {
             </span>
           </Tooltip>
           <Tooltip title="Previous week">
-            <span><IconButton aria-label="Previous week" disabled={props.disabled} onClick={() => props.onWeekNavigate(-1)}><ChevronLeftRounded /></IconButton></span>
+            <span>
+              <IconButton
+                aria-label="Previous week"
+                disabled={props.disabled}
+                onClick={() => props.onWeekNavigate(-1)}
+              >
+                <ChevronLeftRounded />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Next week">
-            <span><IconButton aria-label="Next week" disabled={props.disabled} onClick={() => props.onWeekNavigate(1)}><ChevronRightRounded /></IconButton></span>
+            <span>
+              <IconButton
+                aria-label="Next week"
+                disabled={props.disabled}
+                onClick={() => props.onWeekNavigate(1)}
+              >
+                <ChevronRightRounded />
+              </IconButton>
+            </span>
           </Tooltip>
           <Tooltip title="Next sprint">
             <span>

@@ -20,7 +20,17 @@ left unfinished. Append as you go; a line or two per entry is right.
   instead of a sideways-scrolling table. Verified 320/390/768px layouts, mobile editing, filtering and eight-week sprints; desktop retains the table.
 - Day.js handles strict date parsing, UTC arithmetic and ISO week boundaries;
   sprint anchoring and prorated weekday capacity remain application rules.
-- Keep all people in the dataset, with client-side pages of 10 and summaries over
-  all filtered people. Only the active responsive layout mounts; week arrows supplement sprint navigation.
-- A browser-only 500-person fixture verified pagination, whole-dataset search,
-  stable summaries and mobile widths of 320/390/768px. The backend is still mocked.
+- The frontend now reads real capacity rows through an HTTP adapter and PATCHes
+  weekly hours. TanStack Query awaits capacity-prefix invalidation after saves;
+  active ranges refetch and inactive ranges become stale, even with polling off.
+- Verified the real 500-person view and PATCH-to-GET sequence. A simulated failed
+  PATCH rolled back the optimistic hours and refetched without changing database values.
+- Final review aligned PATCH validation with the editor's 0-168 hour range,
+  limited bodies to 4 KiB and one JSON object, and bounded database calls to five seconds.
+- Initial read failures now show unavailable totals instead of empty results.
+  Prorated capacity retains fractional precision for comparisons; only display values round to two decimals.
+- Added 23 API validation cases and five read-only seeded-database scenarios,
+  including independent allocation calculations for the first five people; all passed.
+  Production build and desktop/mobile save, refetch, failure/retry checks also passed.
+- Updates remain last-write-wins (no version field in the fixed schema). Existing
+  query timings are single-request measurements, not evidence of high-concurrency capacity.

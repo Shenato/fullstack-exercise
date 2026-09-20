@@ -21,8 +21,10 @@ it, we want to know you saw it.
 
 One concrete example. Every real session has one.
 
--
+- The AI designed the
 
 ## What would you do differently with a week?
 
--
+- I would paginate people before aggregating assignments, not paginate the final person per week rows. Otherwise, one person’s weeks could be split across pages, and the database might still aggregate everyone. Ofcourse this means I would have to implement a search endpoint since we wouldn't be able to search the entire dataset on the Frontend.
+
+- I would add backend pagination and do more query optimizations based on our customer's needs. If most teams run 2 week sprints for example I would try to optimize for that.

@@ -93,3 +93,26 @@ We spend about ten minutes per submission, on:
 Then we talk about it for an hour, live, and extend it together. Come ready to explain
 what you decided and why — that conversation is the real point of this exercise, and it's
 much easier when the notes are honest about what you didn't get to.
+
+## Tests
+
+With `make up` running, use another terminal at the repository root:
+
+```bash
+docker compose exec -T web npm test
+docker compose run --rm --no-deps -T -v "$PWD/api:/src:ro" --entrypoint go api test ./...
+```
+
+The frontend tests cover date rules, HTTP response mapping, and optimistic update,
+rollback, cancellation, and refetch behavior. Backend tests cover request validation.
+To also run PostgreSQL integration tests:
+
+```bash
+docker compose run --rm --no-deps -T -v "$PWD/api:/src:ro" \
+   -e 'CAPACITY_TEST_DATABASE_URL=postgres://capacity:capacity@db:5432/capacity?sslmode=disable' \
+   --entrypoint go api test -count=1 ./...
+```
+
+Integration tests read the seed and use connection-local temporary tables for write
+tests; they do not change seeded records or schema files. Without the environment
+variable, database-dependent tests are explicitly skipped.

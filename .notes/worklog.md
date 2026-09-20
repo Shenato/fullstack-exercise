@@ -34,3 +34,8 @@ left unfinished. Append as you go; a line or two per entry is right.
   Production build and desktop/mobile save, refetch, failure/retry checks also passed.
 - Updates remain last-write-wins (no version field in the fixed schema). Existing
   query timings are single-request measurements, not evidence of high-concurrency capacity.
+- Added 14 frontend tests for calendar rules, response mapping, optimistic cache
+  updates, cancellation, rollback and failed refresh after a successful save.
+- Extended API coverage with isolated temporary-table fixtures for duplicate and
+  boundary assignments, unassigned people, PATCH persistence and unchanged allocations;
+  seeded records remain untouched. Full frontend and database suites passed.

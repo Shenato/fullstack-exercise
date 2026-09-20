@@ -1,5 +1,5 @@
-import { CapacityPage } from './page/CapacityPage'
+import { CapacityPage } from "./page/CapacityPage";
 
 export function App() {
-  return <CapacityPage />
+  return <CapacityPage />;
 }

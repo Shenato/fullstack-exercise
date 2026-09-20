@@ -30,6 +30,7 @@ type Props = {
   unit: DisplayUnit;
   loading: boolean;
   saving: boolean;
+  mobile: boolean;
   onEdit: (person: Person) => void;
   onClearFilters: () => void;
 };
@@ -42,15 +43,16 @@ export function CapacityGrid({
   unit,
   loading,
   saving,
+  mobile,
   onEdit,
   onClearFilters,
 }: Props) {
   return (
-    <>
+    mobile ? (
       <Box
         component="section"
         aria-label="Team capacity by person"
-        sx={{ display: { xs: "block", md: "none" }, minWidth: 0 }}
+        sx={{ minWidth: 0 }}
       >
         {loading ? (
           <Box role="status" aria-label="Loading team capacity">
@@ -211,12 +213,12 @@ export function CapacityGrid({
           </Box>
         )}
       </Box>
+    ) : (
       <TableContainer
         className="capacity-table-scroll"
         tabIndex={0}
         aria-label="Team capacity grid"
         sx={{
-          display: { xs: "none", md: "block" },
           bgcolor: "background.paper",
           borderTop: "1px solid",
           borderBottom: "1px solid",
@@ -435,6 +437,6 @@ export function CapacityGrid({
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    )
   );
 }

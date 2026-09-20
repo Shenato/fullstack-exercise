@@ -12,6 +12,8 @@ import {
 import ChevronLeftRounded from "@mui/icons-material/ChevronLeftRounded";
 import ChevronRightRounded from "@mui/icons-material/ChevronRightRounded";
 import CalendarMonthOutlined from "@mui/icons-material/CalendarMonthOutlined";
+import KeyboardDoubleArrowLeftRounded from "@mui/icons-material/KeyboardDoubleArrowLeftRounded";
+import KeyboardDoubleArrowRightRounded from "@mui/icons-material/KeyboardDoubleArrowRightRounded";
 import { CapacityFilters } from "../components/ui/CapacityFilters";
 import { RefreshControls } from "../components/ui/RefreshControls";
 import { formatDate, rangeError } from "../lib/calendar";
@@ -30,6 +32,7 @@ type Props = {
   disabled: boolean;
   onRange: (range: DateRange) => void;
   onNavigate: (direction: number) => void;
+  onWeekNavigate: (direction: number) => void;
   onCurrent: () => void;
   onSearch: (value: string) => void;
   onOverOnly: (value: boolean) => void;
@@ -50,7 +53,7 @@ export function CapacityControls(props: Props) {
       className="controls-section"
     >
       <Box className="range-toolbar">
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.5 }}>
           <Tooltip title="Previous sprint">
             <span>
               <IconButton
@@ -58,9 +61,15 @@ export function CapacityControls(props: Props) {
                 disabled={props.disabled}
                 onClick={() => props.onNavigate(-1)}
               >
-                <ChevronLeftRounded />
+                <KeyboardDoubleArrowLeftRounded />
               </IconButton>
             </span>
+          </Tooltip>
+          <Tooltip title="Previous week">
+            <span><IconButton aria-label="Previous week" disabled={props.disabled} onClick={() => props.onWeekNavigate(-1)}><ChevronLeftRounded /></IconButton></span>
+          </Tooltip>
+          <Tooltip title="Next week">
+            <span><IconButton aria-label="Next week" disabled={props.disabled} onClick={() => props.onWeekNavigate(1)}><ChevronRightRounded /></IconButton></span>
           </Tooltip>
           <Tooltip title="Next sprint">
             <span>
@@ -69,7 +78,7 @@ export function CapacityControls(props: Props) {
                 disabled={props.disabled}
                 onClick={() => props.onNavigate(1)}
               >
-                <ChevronRightRounded />
+                <KeyboardDoubleArrowRightRounded />
               </IconButton>
             </span>
           </Tooltip>

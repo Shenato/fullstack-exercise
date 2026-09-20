@@ -6,9 +6,12 @@ import {
   Chip,
   IconButton,
   LinearProgress,
+  Pagination,
   Snackbar,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import ViewWeekOutlined from "@mui/icons-material/ViewWeekOutlined";
@@ -44,6 +47,8 @@ const WeeklyHoursEditor = lazy(() =>
 );
 
 export function CapacityPage() {
+  const mobile = useMediaQuery(useTheme().breakpoints.down("md"));
+  const [page, setPage] = useState(1);
   const [settings, setSettings] = useState(readSettings);
   const [range, setRange] = useState(() => sprintRange(settings));
   const [custom, setCustom] = useState(false);
@@ -109,6 +114,7 @@ export function CapacityPage() {
   );
 
   function saveSettings(next: Settings) {
+    setPage(1);
     setSettings(next);
     setRange(sprintRange(next, range.from));
     setCustom(false);
@@ -125,9 +131,15 @@ export function CapacityPage() {
   }
 
   function applyRange(next: DateRange) {
+    setPage(1);
     setRange(next);
     setCustom(true);
   }
+
+  const pageCount = Math.max(1, Math.ceil(people.length / 10));
+  const currentPage = Math.min(page, pageCount);
+  const firstPerson = (currentPage - 1) * 10;
+  const visiblePeople = people.slice(firstPerson, firstPerson + 10);
 
   return (
     <>
@@ -210,17 +222,27 @@ export function CapacityPage() {
           onRange={applyRange}
           onNavigate={(direction) => {
             const length = settings.weeks * 7 * direction;
+            setPage(1);
             setRange({
               from: addDays(range.from, length),
               to: addDays(range.to, length),
             });
           }}
+          onWeekNavigate={(direction) => {
+            setPage(1);
+            setRange({
+              from: addDays(range.from, direction * 7),
+              to: addDays(range.to, direction * 7),
+            });
+            setCustom(true);
+          }}
           onCurrent={() => {
+            setPage(1);
             setRange(sprintRange(settings));
             setCustom(false);
           }}
-          onSearch={setSearch}
-          onOverOnly={setOverOnly}
+          onSearch={(value) => { setSearch(value); setPage(1); }}
+          onOverOnly={(value) => { setOverOnly(value); setPage(1); }}
           onUnit={setUnit}
           onAutomatic={setAutomatic}
           onSeconds={setSeconds}
@@ -235,7 +257,7 @@ export function CapacityPage() {
         >
           {[
             {
-              label: "People in view",
+              label: "Matching people",
               value: String(people.length),
               detail: `${query.data?.people.length ?? 0} team members`,
               tone: "text.primary",
@@ -249,7 +271,7 @@ export function CapacityPage() {
             {
               label: "Available hours",
               value: `${formatHours(available)}h`,
-              detail: "Across selected workdays",
+              detail: "All matching people",
               tone: "success.main",
             },
             {
@@ -321,8 +343,10 @@ export function CapacityPage() {
           </Alert>
         )}
         <CapacityGrid
+          key={`${range.from}:${range.to}:${currentPage}:${search}:${overOnly}`}
           weeks={weeks}
-          people={people}
+          people={visiblePeople}
+          mobile={mobile}
           unit={unit}
           loading={query.isPending}
           saving={mutation.isPending}
@@ -330,8 +354,17 @@ export function CapacityPage() {
           onClearFilters={() => {
             setSearch("");
             setOverOnly(false);
+            setPage(1);
           }}
         />
+        {!query.isPending && people.length > 0 && (
+          <Box component="nav" aria-label="People pages" sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 1.5, py: 2 }}>
+            <Typography sx={{ fontSize: 12, color: "text.secondary" }}>
+              {firstPerson + 1}-{Math.min(firstPerson + 10, people.length)} of {people.length} people
+            </Typography>
+            <Pagination count={pageCount} page={currentPage} onChange={(_event, value) => setPage(value)} size="small" siblingCount={0} boundaryCount={1} disabled={mutation.isPending} />
+          </Box>
+        )}
         <Box component="footer" className="grid-footer">
           <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
             {[

@@ -20,3 +20,7 @@ left unfinished. Append as you go; a line or two per entry is right.
   instead of a sideways-scrolling table. Verified 320/390/768px layouts, mobile editing, filtering and eight-week sprints; desktop retains the table.
 - Day.js handles strict date parsing, UTC arithmetic and ISO week boundaries;
   sprint anchoring and prorated weekday capacity remain application rules.
+- Keep all people in the dataset, with client-side pages of 10 and summaries over
+  all filtered people. Only the active responsive layout mounts; week arrows supplement sprint navigation.
+- A browser-only 500-person fixture verified pagination, whole-dataset search,
+  stable summaries and mobile widths of 320/390/768px. The backend is still mocked.
